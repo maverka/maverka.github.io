@@ -1,47 +1,82 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Maverka – Deneyim Tasarımı</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    body {
-      background: #121212;
+    html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #121212;
     }
-    #paintCanvas {
-      position: absolute;
+    canvas {
+      position: fixed;
       top: 0; left: 0;
-      width: 100%; height: 100%;
-      pointer-events: none;
+      z-index: 0;
+    }
+    .content {
+      position: relative;
+      z-index: 10;
     }
   </style>
 </head>
-<body class="relative flex items-center justify-center h-screen text-white overflow-hidden">
+<body class="text-white">
   <canvas id="paintCanvas"></canvas>
-  
-  <div class="z-10 text-center px-4">
-    <h1 class="text-5xl md:text-7xl font-bold mb-6">We Design Experiences</h1>
-    <p class="text-lg mb-8">Yaratıcı ve yenilikçi dijital çözümler</p>
-    <a href="#" class="inline-block bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-lg text-lg">Başlayalım</a>
+
+  <div class="content flex items-center justify-center h-screen text-center px-4">
+    <div>
+      <h1 class="text-5xl md:text-7xl font-bold mb-6">We Design Experiences</h1>
+      <p class="text-lg mb-8">Yaratıcı ve yenilikçi dijital çözümler</p>
+      <a href="#" class="inline-block bg-blue-600 hover:bg-blue-500 px-6 py-3 rounded-lg text-lg">Başlayalım</a>
+    </div>
   </div>
 
   <script>
-    const canvas = document.getElementById('paintCanvas');
-    const ctx = canvas.getContext('2d');
+    const canvas = document.getElementById("paintCanvas");
+    const ctx = canvas.getContext("2d");
+
+    let width, height;
     function resize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
     }
-    window.addEventListener('resize', resize);
     resize();
-    window.addEventListener('mousemove', e => {
-      const radius = 20;
-      ctx.fillStyle = 'rgba(255,255,255,0.05)';
-      ctx.beginPath();
-      ctx.arc(e.clientX, e.clientY, radius, 0, Math.PI*2);
-      ctx.fill();
+    window.addEventListener("resize", resize);
+
+    let trails = [];
+
+    window.addEventListener("mousemove", e => {
+      trails.push({
+        x: e.clientX,
+        y: e.clientY,
+        radius: Math.random() * 30 + 20,
+        color: `hsl(${Math.random() * 360}, 100%, 70%)`,
+        life: 1
+      });
     });
+
+    function draw() {
+      ctx.clearRect(0, 0, width, height);
+
+      trails = trails.filter(p => p.life > 0.01);
+
+      for (let t of trails) {
+        ctx.beginPath();
+        ctx.globalAlpha = t.life;
+        ctx.fillStyle = t.color;
+        ctx.arc(t.x, t.y, t.radius, 0, Math.PI * 2);
+        ctx.fill();
+        t.life *= 0.96; // yavaşça yok olma
+      }
+
+      ctx.globalAlpha = 1;
+      requestAnimationFrame(draw);
+    }
+
+    draw();
   </script>
 </body>
 </html>

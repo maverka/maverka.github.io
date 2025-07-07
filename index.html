@@ -50,35 +50,45 @@
     resize();
     window.addEventListener("resize", resize);
 
-    let trails = [];
+    const colors = ['#1e3a8a', '#6b21a8', '#06b6d4']; // lacivert, mor, turkuaz
+let colorIndex = 0;
 
-    window.addEventListener("mousemove", e => {
-      trails.push({
-        x: e.clientX,
-        y: e.clientY,
-        radius: Math.random() * 30 + 20,
-        color: `hsl(${Math.random() * 360}, 100%, 70%)`,
-        life: 1
-      });
-    });
+let trails = [];
 
-    function draw() {
-      ctx.clearRect(0, 0, width, height);
+window.addEventListener("mousemove", e => {
+  trails.push({
+    x: e.clientX,
+    y: e.clientY,
+    radius: Math.random() * 25 + 10,
+    color: colors[colorIndex],
+    life: 1
+  });
 
-      trails = trails.filter(p => p.life > 0.01);
+  colorIndex = (colorIndex + 1) % colors.length;
+});
 
-      for (let t of trails) {
-        ctx.beginPath();
-        ctx.globalAlpha = t.life;
-        ctx.fillStyle = t.color;
-        ctx.arc(t.x, t.y, t.radius, 0, Math.PI * 2);
-        ctx.fill();
-        t.life *= 0.96; // yavaşça yok olma
-      }
+function draw() {
+  ctx.fillStyle = 'rgba(0, 0, 0, 0.1)'; // arka planı hafifçe siler, yumuşatma sağlar
+  ctx.fillRect(0, 0, width, height);
 
-      ctx.globalAlpha = 1;
-      requestAnimationFrame(draw);
-    }
+  trails = trails.filter(p => p.life > 0.02);
+
+  for (let t of trails) {
+    ctx.beginPath();
+    ctx.globalAlpha = t.life * 0.6; // daha yumuşak görünüm
+    ctx.fillStyle = t.color;
+    ctx.shadowBlur = 20; // soft ışık efekti
+    ctx.shadowColor = t.color;
+    ctx.arc(t.x, t.y, t.radius, 0, Math.PI * 2);
+    ctx.fill();
+    t.life *= 0.95; // yavaşça kaybolma
+  }
+
+  ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
+  requestAnimationFrame(draw);
+}
+
 
     draw();
   </script>

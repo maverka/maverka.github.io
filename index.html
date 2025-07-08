@@ -66,27 +66,30 @@
   });
 
   function draw() {
-    // Yavaş solgu: önceki izleri hafiflet
-    ctx.fillStyle = "rgba(0,0,0,0.03)";
-    ctx.fillRect(0, 0, width, height);
+  hue += 0.3;
+  if (hue > 300) hue = 220;
 
-    trails = trails.filter(t => t.life > 0.01);
+  ctx.fillStyle = "rgba(0, 0, 0, 0.03)";
+  ctx.fillRect(0, 0, width, height);
 
-    for (let t of trails) {
-      ctx.beginPath();
-      ctx.globalAlpha = t.life * 0.4;
-      ctx.fillStyle = t.color;
-      ctx.shadowBlur = 30;
-      ctx.shadowColor = t.color;
-      ctx.arc(t.x, t.y, t.radius, 0, 2 * Math.PI);
-      ctx.fill();
-      t.life *= 0.98; // Çok yavaş kaybolma
-    }
+  trails = trails.filter(t => t.life > 0.01);
 
-    ctx.globalAlpha = 1;
-    ctx.shadowBlur = 0;
-    requestAnimationFrame(draw);
+  for (let t of trails) {
+    ctx.beginPath();
+    ctx.globalAlpha = t.life * 0.4;
+    ctx.fillStyle = t.color;
+    ctx.shadowBlur = 30;
+    ctx.shadowColor = t.color;
+    ctx.arc(t.x, t.y, t.radius, 0, 2 * Math.PI);
+    ctx.fill();
+    t.life *= 0.98;
   }
+
+  ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
+  requestAnimationFrame(draw);
+}
+
 
   draw();
   </script>

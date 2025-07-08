@@ -38,8 +38,8 @@
     </div>
   </div>
 
-  <script>
-    const canvas = document.getElementById("paintCanvas");
+<script>
+  const canvas = document.getElementById("paintCanvas");
   const ctx = canvas.getContext("2d");
 
   let width, height;
@@ -50,48 +50,51 @@
   resize();
   window.addEventListener("resize", resize);
 
-  const colors = ['#1e3a8a', '#6b21a8', '#06b6d4'];
-  let colorIndex = 0;
+  let hue = 250; // Başlangıç tonu: mor-lacivert
   let trails = [];
 
-  window.addEventListener("mousemove", e => {
-    trails.push({
-      x: e.clientX + (Math.random() - 0.5) * 100,
-      y: e.clientY + (Math.random() - 0.5) * 100,
-      radius: Math.random() * 50 + 30,
-      color: colors[colorIndex],
-      life: 1
-    });
-    colorIndex = (colorIndex + 1) % colors.length;
+  let mouse = { x: 0, y: 0 };
+  window.addEventListener("mousemove", (e) => {
+    mouse.x = e.clientX;
+    mouse.y = e.clientY;
+    for (let i = 0; i < 2; i++) {
+      trails.push({
+        x: mouse.x + (Math.random() - 0.5) * 40,
+        y: mouse.y + (Math.random() - 0.5) * 40,
+        radius: Math.random() * 50 + 30,
+        color: `hsl(${hue}, 100%, 65%)`,
+        life: 1,
+      });
+    }
   });
 
   function draw() {
-  hue += 0.3;
-  if (hue > 300) hue = 220;
+    hue += 0.05;
+    if (hue > 280) hue = 220; // Sadece mor-lacivert tonları
 
-  ctx.fillStyle = "rgba(0, 0, 0, 0.03)";
-  ctx.fillRect(0, 0, width, height);
+    ctx.fillStyle = "rgba(0, 0, 0, 0.05)";
+    ctx.fillRect(0, 0, width, height);
 
-  trails = trails.filter(t => t.life > 0.01);
+    trails = trails.filter((t) => t.life > 0.01);
 
-  for (let t of trails) {
-    ctx.beginPath();
-    ctx.globalAlpha = t.life * 0.4;
-    ctx.fillStyle = t.color;
-    ctx.shadowBlur = 30;
-    ctx.shadowColor = t.color;
-    ctx.arc(t.x, t.y, t.radius, 0, 2 * Math.PI);
-    ctx.fill();
-    t.life *= 0.98;
+    for (let t of trails) {
+      ctx.beginPath();
+      ctx.globalAlpha = t.life * 0.3;
+      ctx.fillStyle = t.color;
+      ctx.shadowBlur = 40;
+      ctx.shadowColor = t.color;
+      ctx.arc(t.x, t.y, t.radius, 0, Math.PI * 2);
+      ctx.fill();
+      t.life *= 0.97;
+    }
+
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
+    requestAnimationFrame(draw);
   }
 
-  ctx.globalAlpha = 1;
-  ctx.shadowBlur = 0;
-  requestAnimationFrame(draw);
-}
-
-
   draw();
-  </script>
+</script>
+
 </body>
 </html>
